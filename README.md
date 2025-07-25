@@ -92,6 +92,59 @@ A RESTful API service for managing suppliers, their groups, addresses, and conta
    - Required tables with proper relationships
    - Enable `pgcrypto` extension for UUID generation
 
+### Database Schema & Relationships
+
+The database consists of 4 main tables with the following relationships:
+
+```
+┌─────────────────┐           ┌─────────────────┐
+│    supplier     │           │ supplier_group  │
+├─────────────────┤           ├─────────────────┤
+│ PK  id          │──────────▶│ PK  id          │
+│     uuid        │ one to    │     uuid        │
+│     code        │   many    │ FK  supplier_id │
+│     name        │           │     group_name  │
+│     nickname    │           │     value       │
+│     logo        │           │     logo        │
+│     created_by  │           │     created_by  │
+│     created_date│           │     created_date│
+│ last_updated_by │           │ last_updated_by │
+│last_updated_date│           │last_updated_date│
+│     is_active   │           │     is_active   │
+│     is_deleted  │           │     is_deleted  │
+└─────────────────┘           └─────────────────┘
+         │                             
+         │ one to many                 
+         ├─────────────────────────────┐
+         │                             │
+         ▼                             ▼
+┌─────────────────┐           ┌─────────────────┐
+│     address     │           │    contacts     │
+├─────────────────┤           ├─────────────────┤
+│ PK  id          │           │ PK  id          │
+│     uuid        │           │     uuid        │
+│ FK  supplier_id │           │ FK  supplier_id │
+│     name        │           │     name        │
+│ full_address    │           │ job_position    │
+│     is_main     │           │     email       │
+│     created_by  │           │ phone_number    │
+│     created_date│           │mobile_phone_num │
+│ last_updated_by │           │     is_main     │
+│last_updated_date│           │     created_by  │
+│     is_active   │           │     created_date│
+│     is_deleted  │           │ last_updated_by │
+└─────────────────┘           │last_updated_date│
+                              │     is_active   │
+                              │     is_deleted  │
+                              └─────────────────┘
+```
+
+#### Key Features:
+- **Soft Delete**: All tables support soft delete with `is_deleted` and `is_active` flags
+- **Audit Trail**: All tables have `created_by`, `created_date`, `last_updated_by`, `last_updated_date`
+- **UUID Support**: Each record has a UUID for external referencing
+- **Main Record Flags**: Address and Contact tables have `is_main` to identify primary records
+
 ## Running the Application
 
 1. **Start the server**
